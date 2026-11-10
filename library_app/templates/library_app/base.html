@@ -1,0 +1,44 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Library Management System{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+</head>
+
+<body class="min-h-screen bg-page font-sans text-text-main antialiased">
+
+    <div class="min-h-screen">
+
+        {% include 'library_app/includes/sidebar.html' %}
+
+        <div id="main-content" class="min-h-screen lg:pl-64">
+
+            {% include 'library_app/includes/topbar.html' %}
+
+            <main class="p-4 sm:p-6 lg:p-8">
+                {% include 'library_app/includes/message.html' %}
+
+                {% block content %}
+                {% endblock %}
+            </main>
+
+        </div>
+    </div>
+
+    <script src="{% static 'library_app/js/app.js' %}"></script>
+
+    {% block extra_js %}
+    {% endblock %}
+
+</body>
+</html>

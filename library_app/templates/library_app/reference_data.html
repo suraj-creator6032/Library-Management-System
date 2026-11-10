@@ -1,0 +1,179 @@
+
+{% extends 'library_app/base.html' %}
+
+{% block title %}Reference Data | Library Management System{% endblock %}
+
+{% block content %}
+
+<section class="mb-7">
+    <h1 class="text-2xl font-bold text-slate-900">
+        Reference Data Management
+    </h1>
+    <p class="mt-1 text-sm text-slate-500">
+        Manage authors, publishers and book categories.
+    </p>
+</section>
+
+<!-- Authors -->
+<section class="mb-7 overflow-hidden rounded-xl border border-border bg-white shadow-sm">
+
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-5">
+        <div>
+            <h2 class="text-lg font-semibold text-slate-900">Authors</h2>
+            <p class="mt-1 text-sm text-slate-500">
+                {{ authors|length }} registered authors
+            </p>
+        </div>
+
+        <a href="{% url 'add_reference' 'author' %}"
+           class="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">
+            + Add Author
+        </a>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full min-w-[550px] text-left">
+            <thead class="bg-slate-50">
+                <tr>
+                    <th class="px-5 py-3 text-xs font-semibold uppercase text-slate-500">Author</th>
+                    <th class="px-5 py-3 text-xs font-semibold uppercase text-slate-500">Biography</th>
+                    <th class="px-5 py-3 text-xs font-semibold uppercase text-slate-500">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for author in authors %}
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-5 py-4 text-sm font-medium text-slate-800">
+                            {{ author.author_name }}
+                        </td>
+                        <td class="max-w-sm px-5 py-4 text-sm text-slate-500">
+                            {{ author.biography|default:"—"|truncatechars:90 }}
+                        </td>
+                        <td class="px-5 py-4">
+                            <a href="{% url 'edit_reference' 'author' author.author_id %}"
+                               class="text-sm font-semibold text-indigo-600 hover:text-indigo-800">
+                                Edit
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3" class="px-5 py-8 text-center text-sm text-slate-500">
+                            No authors registered yet.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- Publishers -->
+<section class="mb-7 overflow-hidden rounded-xl border border-border bg-white shadow-sm">
+
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-5">
+        <div>
+            <h2 class="text-lg font-semibold text-slate-900">Publishers</h2>
+            <p class="mt-1 text-sm text-slate-500">
+                {{ publishers|length }} registered publishers
+            </p>
+        </div>
+
+        <a href="{% url 'add_reference' 'publisher' %}"
+           class="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">
+            + Add Publisher
+        </a>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full min-w-[550px] text-left">
+            <thead class="bg-slate-50">
+                <tr>
+                    <th class="px-5 py-3 text-xs font-semibold uppercase text-slate-500">Publisher</th>
+                    <th class="px-5 py-3 text-xs font-semibold uppercase text-slate-500">Address</th>
+                    <th class="px-5 py-3 text-xs font-semibold uppercase text-slate-500">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for publisher in publishers %}
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-5 py-4 text-sm font-medium text-slate-800">
+                            {{ publisher.publisher_name }}
+                        </td>
+                        <td class="max-w-sm px-5 py-4 text-sm text-slate-500">
+                            {{ publisher.address|default:"—"|truncatechars:90 }}
+                        </td>
+                        <td class="px-5 py-4">
+                            <a href="{% url 'edit_reference' 'publisher' publisher.publisher_id %}"
+                               class="text-sm font-semibold text-indigo-600 hover:text-indigo-800">
+                                Edit
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3" class="px-5 py-8 text-center text-sm text-slate-500">
+                            No publishers registered yet.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- Categories -->
+<section class="overflow-hidden rounded-xl border border-border bg-white shadow-sm">
+
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-5">
+        <div>
+            <h2 class="text-lg font-semibold text-slate-900">Categories</h2>
+            <p class="mt-1 text-sm text-slate-500">
+                {{ categories|length }} registered categories
+            </p>
+        </div>
+
+        <a href="{% url 'add_reference' 'category' %}"
+           class="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">
+            + Add Category
+        </a>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full min-w-[550px] text-left">
+            <thead class="bg-slate-50">
+                <tr>
+                    <th class="px-5 py-3 text-xs font-semibold uppercase text-slate-500">Category</th>
+                    <th class="px-5 py-3 text-xs font-semibold uppercase text-slate-500">Description</th>
+                    <th class="px-5 py-3 text-xs font-semibold uppercase text-slate-500">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for category in categories %}
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-5 py-4 text-sm font-medium text-slate-800">
+                            {{ category.category_name }}
+                        </td>
+                        <td class="max-w-sm px-5 py-4 text-sm text-slate-500">
+                            {{ category.description|default:"—"|truncatechars:90 }}
+                        </td>
+                        <td class="px-5 py-4">
+                            <a href="{% url 'edit_reference' 'category' category.category_id %}"
+                               class="text-sm font-semibold text-indigo-600 hover:text-indigo-800">
+                                Edit
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3" class="px-5 py-8 text-center text-sm text-slate-500">
+                            No categories registered yet.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{% endblock %}

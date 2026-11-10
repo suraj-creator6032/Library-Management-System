@@ -1,58 +1,212 @@
 # Library Management System
 
-A college Library Management System developed using **Django, Python, and MySQL**.
+A web-based **Library Management System** developed using Django, Python, MySQL, HTML and Tailwind CSS. The application is designed to manage the daily operations of a college library, including book inventory, library members, book circulation and reference data.
 
-The application is designed to manage books, physical book copies, library members, borrowing, returns, reservations, fines, and payments.
+This project is developed as part of our **Database Management Systems (DBMS) academic project**.
 
-## Technology Stack
+---
 
-- **Backend:** Python, Django 6.0.10
-- **Database:** MySQL 8.0+
-- **Frontend:** HTML, CSS, Bootstrap (planned)
-- **Development environment:** Visual Studio Code
-- **Version control:** Git and GitHub
+## 1. Project Overview
 
-## Project Features
+The Library Management System provides a centralized platform for managing a college library.
 
-- Book and book-copy management
-- Author, publisher, and category management
-- Student, faculty, and librarian management
-- Book issue and return management
-- Reservations
-- Fine calculation and payment records
-- User authentication
-- Role-based access control
-- Library reports and statistics
+It supports different library member types:
 
-## Project Setup
+- **Students** – Browse the book catalogue and view book availability.
+- **Faculty** – Access the library catalogue and related information.
+- **Librarians** – Manage books, physical copies, authors, publishers and categories.
 
-Follow these instructions to run the project on your local computer.
+The application uses Django for backend development and MySQL as its relational database.
 
-### 1. Install the required software
+## 2. Features
 
-Install the following:
+### Authentication and Access Control
+- User login and logout.
+- Django authentication system.
+- User profiles linked to library membership records.
+- Role-based access control for librarians and other members.
 
-- Python 3.14 (or a compatible Python version)
-- MySQL Server 8.0 or newer
-- MySQL Workbench (recommended)
-- Git
-- Visual Studio Code
+### Dashboard
+- Total book titles.
+- Total physical copies.
+- Available copies.
+- Currently issued books.
+- Pending reservations.
+- Outstanding fine balance.
+- Member account information.
 
-### 2. Clone the repository
+### Books Catalogue
+- Browse registered books.
+- Search by title, ISBN or author.
+- Filter books by category.
+- View publisher and publication information.
+- View physical copy availability.
+- Pagination for catalogue results.
 
-Open PowerShell or the VS Code terminal and execute:
+### Book Management
+- Add new books.
+- Edit existing book information.
+- Associate multiple authors with a book.
+- Register multiple physical copies.
+- Manage accession numbers and shelf locations.
+- Safe deletion with protection for historical loan and reservation records.
 
-```powershell
-git clone https://github.com/YOUR_USERNAME/LibraryManagementSystem.git
+### Reference Data Management
+- Add and edit authors.
+- Add and edit publishers.
+- Add and edit book categories.
+
+---
+
+## 3. Technology Stack
+
+| Component | Technology |
+|---|---|
+| Backend | Python, Django |
+| Frontend | HTML, Tailwind CSS |
+| Database | MySQL 8.0+ |
+| Database Interface | MySQL Workbench |
+| JavaScript | Vanilla JavaScript |
+| CSS Build Tool | Tailwind CSS CLI |
+| Code Editor | Visual Studio Code |
+| Version Control | Git and GitHub |
+
+---
+
+## 4. Database Design
+
+The project uses a relational MySQL database named `library_management`.
+
+### Database Tables
+
+| Table | Purpose |
+|---|---|
+| departments | Stores department information |
+| members | Stores student, faculty and librarian records |
+| authors | Stores author information |
+| publishers | Stores publisher information |
+| categories | Stores book categories |
+| books | Stores book title and bibliographic information |
+| book_authors | Resolves the many-to-many relationship between books and authors |
+| book_copies | Stores individual physical copies |
+| loans | Stores book issue and return records |
+| reservations | Stores book reservation records |
+| fines | Stores fines associated with loans |
+| payments | Stores fine payment records |
+| library_settings | Stores configurable library settings |
+
+Django's built-in authentication tables are used for application login. The `user_profiles` table connects Django user accounts to existing library members.
+
+### Database Relationships
+
+- One department can have multiple members.
+- One publisher can publish multiple books.
+- One category can contain multiple books.
+- A book can have multiple authors, and an author can write multiple books.
+- One book can have multiple physical copies.
+- One member can have multiple loans.
+- One physical copy can have multiple historical loan records.
+- A loan can have an associated fine.
+- A fine can have multiple payments.
+- A member can make multiple reservations.
+
+---
+
+## 5. DBMS Concepts
+
+The project is designed to demonstrate practical database concepts, including:
+
+- Primary keys and foreign keys.
+- Entity integrity and referential integrity.
+- One-to-one, one-to-many and many-to-many relationships.
+- Database normalization up to 3NF.
+- SQL DDL and DML operations.
+- SELECT queries and filtering.
+- Joins across multiple tables.
+- Aggregate functions and GROUP BY.
+- Subqueries.
+- Database views.
+- Stored procedures.
+- Triggers.
+- Transactions and rollback.
+- Indexing and query optimization.
+- Constraints and data validation.
+
+SQL demonstration files are maintained separately in the `database/queries/` directory.
+
+---
+
+## 6. Project Structure
+
+```text
+Library Management System/
+│
+├── LibraryManagementSystem/
+│   ├── settings.py
+│   ├── urls.py
+│   ├── asgi.py
+│   └── wsgi.py
+│
+├── library_app/
+│   ├── migrations/
+│   ├── templates/
+│   │   └── library_app/
+│   ├── static/
+│   │   └── library_app/
+│   ├── admin.py
+│   ├── apps.py
+│   ├── decorators.py
+│   ├── forms.py
+│   ├── models.py
+│   ├── urls.py
+│   └── views.py
+│
+├── database/
+│   ├── schema.sql
+│   ├── sample_data.sql
+│   └── queries/
+│       ├── 01_book_management.sql
+│       └── 02_reference_data.sql
+│
+├── static/
+│   ├── src/
+│   │   └── input.css
+│   └── css/
+│       └── output.css
+│
+├── .env.example
+├── .gitignore
+├── manage.py
+├── package.json
+├── package-lock.json
+├── requirements.txt
+└── README.md
 ```
 
-Enter the project directory:
+---
 
-```powershell
-cd LibraryManagementSystem
+## 7. Installation and Setup
+
+### Prerequisites
+
+Install the following software:
+
+- Python 3.14 (or a compatible version supported by the project's Django release).
+- MySQL Server 8.0 or later.
+- MySQL Workbench.
+- Node.js LTS and npm.
+- Git.
+
+### Step 1: Clone the Repository
+
+```bash
+git clone <REPOSITORY_URL>
+cd "Library Management System"
 ```
 
-### 3. Create a Python virtual environment
+### Step 2: Create a Python Virtual Environment
+
+Windows PowerShell:
 
 ```powershell
 python -m venv library
@@ -64,207 +218,101 @@ Activate it:
 .\library\Scripts\Activate.ps1
 ```
 
-If PowerShell blocks activation, use Command Prompt instead:
+If PowerShell blocks activation, use:
 
-```cmd
-library\Scripts\activate.bat
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\library\Scripts\Activate.ps1
 ```
 
-### 4. Install Python dependencies
+### Step 3: Install Python Dependencies
 
 ```powershell
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 5. Configure the MySQL Database
+### Step 4: Configure Environment Variables
 
-Each team member must create their own local MySQL database. The database is not hosted on GitHub.
+Create a `.env` file in the project root by copying `.env.example`.
 
-The project includes two SQL files inside the `database/` directory:
-
-| File | Purpose |
-|---|---|
-| `schema.sql` | Creates the database and all 13 tables |
-| `sample_data.sql` | Inserts sample records into the tables |
-
-#### Step 5.1: Start MySQL Server
-
-Make sure your local MySQL Server is running.
-
-Open MySQL Workbench and connect to your local MySQL instance.
-
-#### Step 5.2: Create the Database and Tables
-
-1. Open MySQL Workbench.
-2. Connect to your local MySQL Server.
-3. Open the project file `database/schema.sql`.
-4. Execute the entire SQL script using the lightning button or `Ctrl + Shift + Enter`.
-
-This script creates the database:
-
-```sql
-library_management
+```powershell
+Copy-Item .env.example .env
 ```
 
-It also creates the following 13 tables:
+Update `.env` with your local MySQL credentials and a new Django secret key.
 
-1. departments
-2. members
-3. authors
-4. publishers
-5. categories
-6. books
-7. book_authors
-8. book_copies
-9. loans
-10. reservations
-11. fines
-12. payments
-13. library_settings
-
-#### Step 5.3: Insert Sample Records
-
-After successfully creating all tables:
-
-1. Open `database/sample_data.sql`.
-2. Execute the complete SQL script.
-
-This inserts sample departments, members, authors, publishers, categories, books, book copies, loans, reservations, fines, payments and library settings.
-
-**Important:** Execute `schema.sql` before `sample_data.sql`. The sample data script depends on the tables and their foreign-key relationships already existing.
-
-Do not execute the sample data script repeatedly because duplicate primary keys and unique values may cause errors.
-
-#### Step 5.4: Verify the Database
-
-Execute the following queries in MySQL Workbench:
-
-```sql
-USE library_management;
-
-SHOW TABLES;
-
-SELECT * FROM departments;
-SELECT * FROM members;
-SELECT * FROM books;
-SELECT * FROM book_copies;
-SELECT * FROM loans;
-```
-
-You should see all 13 tables and their corresponding sample records.
-
-#### Step 5.5: Configure Django Database Connection
-
-Create a `.env` file in the project root directory (the same directory as `manage.py`).
-
-Use `.env.example` as a reference.
-
-Configure your own local MySQL credentials:
+Example:
 
 ```env
-DJANGO_SECRET_KEY=YOUR_SECRET_KEY
+DJANGO_SECRET_KEY=your-generated-secret-key
+DEBUG=True
+
 DB_NAME=library_management
 DB_USER=root
-DB_PASSWORD=YOUR_MYSQL_PASSWORD
+DB_PASSWORD=your_mysql_password
 DB_HOST=localhost
 DB_PORT=3306
 ```
 
-Replace `YOUR_MYSQL_PASSWORD` with your own MySQL password.
+**Never commit `.env` to GitHub.**
 
-If your MySQL root account has no password, leave `DB_PASSWORD` empty.
+### Step 5: Set Up the MySQL Database
 
-Never upload your actual `.env` file to GitHub.
+Open MySQL Workbench.
 
-#### Step 5.6: Apply Django Migrations
+Execute the SQL files in this order:
 
-Once the database and its 13 original tables are ready, return to the project terminal.
+1. `database/schema.sql`
+2. `database/sample_data.sql`
 
-Make sure your virtual environment is activated, then execute:
+The first file creates the database and its 13 application tables. The second inserts demonstration data.
+
+Do not execute `sample_data.sql` repeatedly on an already populated database, because duplicate primary keys may cause errors.
+
+### Step 6: Install Frontend Dependencies
+
+From the project root:
+
+```powershell
+npm install
+```
+
+### Step 7: Apply Django Migrations
+
+Make sure your virtual environment is activated and the MySQL database is running.
 
 ```powershell
 python manage.py migrate
 ```
 
-This creates the additional Django authentication, session, admin and user-profile tables.
+The existing library tables are managed through SQL and represented by unmanaged Django models. Django migrations handle Django-managed tables, including authentication and the user profile relationship.
 
-The original 13 library tables are not recreated because their Django models use `managed = False`.
+Do not regenerate or alter the existing library database schema through Django migrations.
 
-#### Step 5.7: Verify Django Connection
-
-Execute:
-
-```powershell
-python manage.py check
-```
-
-If no errors are reported, the Django project configuration is valid.
-
-You can also inspect the existing database tables using:
-
-```powershell
-python manage.py inspectdb
-```
-
-### Database Setup Order
-
-Always follow this order when setting up the project on a new computer:
-
-1. Install and start MySQL Server.
-2. Execute `database/schema.sql`.
-3. Execute `database/sample_data.sql`.
-4. Create and configure the `.env` file.
-5. Install Python dependencies.
-6. Run `python manage.py migrate`.
-7. Create a Django administrator using `python manage.py createsuperuser`.
-8. Start the server using `python manage.py runserver`.
-
-**Note:** Every developer has an independent local MySQL database. Changes to one developer's local database do not automatically appear in another developer's database. Database schema changes must be shared through updated SQL scripts and coordinated with the team.
-
-
-### 6. Configure environment variables
-
-Create a `.env` file in the project root, in the same directory as `manage.py`.
-
-Use `.env.example` as a reference.
-
-Add your local MySQL credentials:
-
-```env
-DJANGO_SECRET_KEY=YOUR_SECRET_KEY
-DB_NAME=library_management
-DB_USER=root
-DB_PASSWORD=YOUR_MYSQL_PASSWORD
-DB_HOST=localhost
-DB_PORT=3306
-```
-
-Generate your own Django secret key. Never commit your actual `.env` file.
-
-### 7. Apply Django migrations
-
-Make sure the MySQL database and its 13 original tables have been created before running migrations.
-
-Execute:
-
-```powershell
-python manage.py migrate
-```
-
-This creates Django's authentication, session, admin, and user-profile tables.
-
-Do not manually create Django's authentication tables.
-
-### 8. Create an administrator account
+### Step 8: Create a Django Administrator
 
 ```powershell
 python manage.py createsuperuser
 ```
 
-Follow the prompts to create your own administrator credentials.
+Follow the prompts to create an administrator account.
 
-### 9. Start the development server
+Use Django Admin to create normal Django user accounts and link them to existing library members through `UserProfile`.
+
+### Step 9: Start Tailwind CSS
+
+Open a terminal in the project root:
+
+```powershell
+npx @tailwindcss/cli -i ./static/src/input.css -o ./static/css/output.css --watch
+```
+
+Keep this terminal running during development.
+
+### Step 10: Start the Django Server
+
+Open another terminal, activate the virtual environment, and execute:
 
 ```powershell
 python manage.py runserver
@@ -272,73 +320,95 @@ python manage.py runserver
 
 Open the application:
 
-- Application: http://127.0.0.1:8000/
-- Django Admin: http://127.0.0.1:8000/admin/
-
-## Common Development Commands
-
-Check the Django project:
-
-```powershell
-python manage.py check
+```text
+http://127.0.0.1:8000/
 ```
 
-Start the development server:
+Django Admin:
+
+```text
+http://127.0.0.1:8000/admin/
+```
+
+---
+
+## 8. Development Workflow
+
+During development, two processes should normally be running:
+
+**Terminal 1 – Tailwind watcher**
+
+```powershell
+npx @tailwindcss/cli -i ./static/src/input.css -o ./static/css/output.css --watch
+```
+
+**Terminal 2 – Django server**
 
 ```powershell
 python manage.py runserver
 ```
 
-Create migrations when changing Django-managed models:
+When Python dependencies change, update `requirements.txt`:
 
 ```powershell
-python manage.py makemigrations
+pip freeze > requirements.txt
 ```
 
-Apply migrations:
+When Node dependencies change, commit the updated `package.json` and `package-lock.json`, but do not commit `node_modules/`.
 
-```powershell
-python manage.py migrate
-```
+---
 
-## Team Collaboration
+## 9. Team Development Guidelines
 
-This is a private GitHub repository.
+- Keep all application functionality inside the existing `library_app` Django application.
+- Do not create unnecessary additional Django apps.
+- Use the existing database schema unless a database change is discussed and approved by the team.
+- Keep SQL demonstration queries in `database/queries/`.
+- Use Django forms for input validation.
+- Apply backend authorization to restricted operations.
+- Use transactions for operations involving multiple related database changes.
+- Never commit database passwords, secret keys or local environment files.
+- Test changes before merging them into the shared project.
 
-Team members must accept an invitation from the repository owner to access the source code.
+---
 
-Before starting work, pull the latest changes:
+## 10. Security Notes
 
-```powershell
-git pull origin main
-```
+- Keep `DEBUG=True` only for local development.
+- Use a unique secret key for each development environment.
+- Never upload `.env` or real database credentials.
+- Use appropriate permissions for different member types.
+- Validate user input on the server side.
+- Protect state-changing operations against CSRF.
+- Use transactions where multiple related database changes must succeed together.
 
-Create a separate branch for your task:
+---
 
-```powershell
-git checkout -b feature/your-feature-name
-```
+## 11. Current Project Scope
 
-After completing your work:
+The current implementation focuses on:
 
-```powershell
-git add .
-git commit -m "Describe your changes"
-git push -u origin feature/your-feature-name
-```
+- Authentication and user profiles.
+- Dashboard.
+- Books catalogue.
+- Book details.
+- Book creation and editing.
+- Physical copy registration.
+- Author, publisher and category management.
+- Safe book deletion.
 
-Create a Pull Request on GitHub to merge your changes into the main branch.
+Additional modules can be developed as the project scope requires.
 
-Do not directly push unfinished features to `main`.
+---
 
-## Important Notes
+## 12. Contributors
 
-- Do not commit `.env`, passwords, secret keys, or database backups containing private information.
-- Do not commit your Python virtual environment.
-- Existing library tables are managed manually in MySQL and represented by Django models with `managed=False`.
-- The `user_profiles` table and Django authentication tables are managed through Django migrations.
-- Each developer must maintain their own local MySQL database.
+Developed by a team of three students as part of an academic DBMS project.
 
-## Project Status
+---
 
-Under active development.
+**Project:** Library Management System  
+**Backend:** Django  
+**Database:** MySQL  
+**Frontend:** HTML and Tailwind CSS  
+**Purpose:** College Library Management and DBMS Demonstration

@@ -1,0 +1,157 @@
+{% extends 'library_app/auth_base.html' %}
+
+{% block title %}Sign In | Libra{% endblock %}
+
+{% block content %}
+
+<div class="flex min-h-screen">
+
+    <!-- Left branding section -->
+    <section class="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-slate-950 p-12 text-white lg:flex">
+
+        <div class="relative z-10 flex items-center gap-3">
+            <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-600 text-xl font-bold">
+                L
+            </div>
+
+            <div>
+                <h1 class="text-xl font-bold tracking-wide">Libra</h1>
+                <p class="text-xs text-slate-400">Library Management System</p>
+            </div>
+        </div>
+
+        <div class="relative z-10 max-w-lg">
+            <p class="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-indigo-400">
+                Welcome to Libra
+            </p>
+
+            <h2 class="text-5xl font-bold leading-tight">
+                Your library.
+                <span class="text-indigo-400">Organized.</span>
+                Your knowledge.
+                <span class="text-indigo-400">Unlimited.</span>
+            </h2>
+
+            <p class="mt-6 max-w-md leading-7 text-slate-400">
+                A smarter way to discover books, manage borrowing,
+                and stay connected with your college library.
+            </p>
+        </div>
+
+        <p class="relative z-10 text-xs text-slate-500">
+            © {% now "Y" %} Libra Library Management System
+        </p>
+
+        <div class="absolute -right-32 -top-32 h-96 w-96 rounded-full border border-indigo-500/20"></div>
+        <div class="absolute -bottom-48 -left-32 h-96 w-96 rounded-full border border-indigo-500/20"></div>
+
+    </section>
+
+
+    <!-- Login section -->
+    <section class="flex flex-1 items-center justify-center bg-slate-50 px-6 py-12">
+
+        <div class="w-full max-w-md">
+
+            <div class="mb-10 lg:hidden">
+                <div class="flex items-center gap-3">
+                    <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-600 text-xl font-bold text-white">
+                        L
+                    </div>
+
+                    <div>
+                        <h1 class="text-xl font-bold text-slate-900">Libra</h1>
+                        <p class="text-xs text-slate-500">Library Management System</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <p class="text-sm font-semibold text-indigo-600">
+                    MEMBER ACCESS
+                </p>
+
+                <h2 class="mt-3 text-3xl font-bold tracking-tight text-slate-900">
+                    Welcome back
+                </h2>
+
+                <p class="mt-2 text-sm text-slate-500">
+                    Sign in to access your library account.
+                </p>
+            </div>
+
+
+            <!-- Messages -->
+            {% if messages %}
+                <div class="mb-6 space-y-3">
+                    {% for message in messages %}
+                        <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+
+            <!-- Login form -->
+            <form method="POST" class="space-y-5">
+
+                {% csrf_token %}
+
+                <div>
+                    <label for="username" class="mb-2 block text-sm font-medium text-slate-700">
+                        Username
+                    </label>
+
+                    <input
+                        id="username"
+                        name="username"
+                        type="text"
+                        autocomplete="username"
+                        required
+                        autofocus
+                        placeholder="Enter your username"
+                        class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+                    >
+                </div>
+
+
+                <div>
+                    <label for="password" class="mb-2 block text-sm font-medium text-slate-700">
+                        Password
+                    </label>
+
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        autocomplete="current-password"
+                        required
+                        placeholder="Enter your password"
+                        class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+                    >
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="flex w-full items-center justify-center rounded-xl bg-indigo-600 px-4 py-3 font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/20"
+                >
+                    Sign in
+                </button>
+
+            </form>
+
+
+            <p class="mt-8 text-center text-xs leading-6 text-slate-500">
+                Access is provided by your library administrator.
+                Contact the librarian if you need an account.
+            </p>
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}

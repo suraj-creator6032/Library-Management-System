@@ -1,0 +1,67 @@
+
+{% extends 'library_app/base.html' %}
+
+{% block title %}{{ page_title }} | Library Management System{% endblock %}
+
+{% block content %}
+
+<section class="mb-7">
+    <a href="{% url 'reference_data' %}"
+       class="text-sm font-medium text-indigo-600 hover:text-indigo-800">
+        ← Back to Reference Data
+    </a>
+
+    <h1 class="mt-3 text-2xl font-bold text-slate-900">
+        {{ page_title }}
+    </h1>
+
+    <p class="mt-1 text-sm text-slate-500">
+        {% if instance %}
+            Update the existing {{ label|lower }} information.
+        {% else %}
+            Add a new {{ label|lower }} to the library database.
+        {% endif %}
+    </p>
+</section>
+
+<section class="max-w-2xl rounded-xl border border-border bg-white p-6 shadow-sm">
+
+    <form method="POST" class="space-y-5">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div>
+                <label for="{{ field.id_for_label }}"
+                       class="mb-2 block text-sm font-medium text-slate-700">
+                    {{ field.label }}
+                    {% if field.field.required %}
+                        <span class="text-rose-500">*</span>
+                    {% endif %}
+                </label>
+
+                {{ field }}
+
+                {% for error in field.errors %}
+                    <p class="mt-1 text-xs text-rose-600">
+                        {{ error }}
+                    </p>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <div class="flex justify-end gap-3 pt-3">
+            <a href="{% url 'reference_data' %}"
+               class="rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50">
+                Cancel
+            </a>
+
+            <button type="submit"
+                    class="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">
+                {% if instance %}Save Changes{% else %}Add {{ label }}{% endif %}
+            </button>
+        </div>
+    </form>
+
+</section>
+
+{% endblock %}

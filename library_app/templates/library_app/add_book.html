@@ -1,0 +1,168 @@
+
+{% extends 'library_app/base.html' %}
+
+{% block title %}Add Book | Library Management System{% endblock %}
+
+{% block content %}
+
+<section class="mb-7">
+    <a href="{% url 'books_catalogue' %}"
+       class="text-sm font-medium text-indigo-600 hover:text-indigo-800">
+        ← Back to Books Catalogue
+    </a>
+
+    <h1 class="mt-3 text-2xl font-bold text-slate-900">
+        Add New Book
+    </h1>
+
+    <p class="mt-1 text-sm text-slate-500">
+        Enter bibliographic information and register physical copies.
+    </p>
+</section>
+
+<form method="POST"
+      class="max-w-4xl space-y-6">
+
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+        <div class="rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+
+    <!-- Book information -->
+    <section class="rounded-xl border border-border bg-white p-6 shadow-sm">
+
+        <h2 class="mb-5 text-lg font-semibold text-slate-900">
+            Book Information
+        </h2>
+
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+
+            {% for field in form %}
+                {% if field.name != 'authors' and field.name != 'accession_numbers' and field.name != 'shelf_location' %}
+
+                    <div>
+                        <label for="{{ field.id_for_label }}"
+                               class="mb-2 block text-sm font-medium text-slate-700">
+                            {{ field.label }}
+                            {% if field.field.required %}
+                                <span class="text-rose-500">*</span>
+                            {% endif %}
+                        </label>
+
+                        {{ field }}
+
+                        {% for error in field.errors %}
+                            <p class="mt-1 text-xs text-rose-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+
+                {% endif %}
+            {% endfor %}
+
+        </div>
+    </section>
+
+    <!-- Author selection -->
+    <section class="rounded-xl border border-border bg-white p-6 shadow-sm">
+
+        <h2 class="mb-2 text-lg font-semibold text-slate-900">
+            Authors
+        </h2>
+
+        <p class="mb-5 text-sm text-slate-500">
+            Select all authors associated with this book.
+        </p>
+
+        {% if form.authors.field.queryset.exists %}
+
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {% for checkbox in form.authors %}
+                    <label class="flex items-center gap-3 rounded-lg border border-slate-200 p-3 text-sm text-slate-700 transition hover:bg-slate-50">
+                        {{ checkbox.tag }}
+                        {{ checkbox.choice_label }}
+                    </label>
+                {% endfor %}
+            </div>
+
+        {% else %}
+
+            <p class="text-sm text-amber-700">
+                No authors have been added yet. Add authors through Django Admin before creating this book.
+            </p>
+
+        {% endif %}
+
+        {% for error in form.authors.errors %}
+            <p class="mt-2 text-xs text-rose-600">{{ error }}</p>
+        {% endfor %}
+
+    </section>
+
+    <!-- Physical copies -->
+    <section class="rounded-xl border border-border bg-white p-6 shadow-sm">
+
+        <h2 class="mb-2 text-lg font-semibold text-slate-900">
+            Physical Copies
+        </h2>
+
+        <p class="mb-5 text-sm text-slate-500">
+            Each physical copy must have a unique accession number.
+        </p>
+
+        <div class="space-y-5">
+
+            <div>
+                <label for="{{ form.accession_numbers.id_for_label }}"
+                       class="mb-2 block text-sm font-medium text-slate-700">
+                    Accession Numbers <span class="text-rose-500">*</span>
+                </label>
+
+                {{ form.accession_numbers }}
+
+                <p class="mt-1 text-xs text-slate-400">
+                    {{ form.accession_numbers.help_text }}
+                </p>
+
+                {% for error in form.accession_numbers.errors %}
+                    <p class="mt-1 text-xs text-rose-600">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div>
+                <label for="{{ form.shelf_location.id_for_label }}"
+                       class="mb-2 block text-sm font-medium text-slate-700">
+                    Shelf Location
+                </label>
+
+                {{ form.shelf_location }}
+
+                {% for error in form.shelf_location.errors %}
+                    <p class="mt-1 text-xs text-rose-600">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Actions -->
+    <div class="flex flex-wrap justify-end gap-3">
+
+        <a href="{% url 'books_catalogue' %}"
+           class="rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50">
+            Cancel
+        </a>
+
+        <button type="submit"
+                class="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700">
+            Save Book
+        </button>
+
+    </div>
+
+</form>
+
+{% endblock %}

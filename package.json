@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.5",
+    "tailwindcss": "^4.3.5"
+  },
+  "scripts": {
+    "dev:css": "tailwindcss -i ./LibraryManagementSystem/static/src/input.css -o ./LibraryManagementSystem/static/css/output.css --watch",
+    "build:css": "tailwindcss -i ./LibraryManagementSystem/static/src/input.css -o ./LibraryManagementSystem/static/css/output.css"
+  }
+}

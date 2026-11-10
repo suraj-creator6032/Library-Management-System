@@ -1,0 +1,105 @@
+<aside id="sidebar"
+    class="fixed inset-y-0 left-0 z-50 flex w-64 -translate-x-full flex-col
+           bg-sidebar text-white transition-transform duration-300
+           lg:translate-x-0">
+
+    <!-- Logo -->
+    <div class="flex h-20 items-center gap-3 border-b border-white/10 px-6">
+
+        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600">
+            <span class="text-xl font-bold">L</span>
+        </div>
+
+        <div>
+            <h1 class="text-lg font-bold tracking-wide">Libra</h1>
+            <p class="text-xs text-slate-400">Library Management</p>
+        </div>
+
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 space-y-1 overflow-y-auto px-4 py-6">
+
+        <p class="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Main Menu
+        </p>
+
+        <a href="{% url 'dashboard' %}"
+           class="flex items-center gap-3 rounded-lg bg-indigo-600 px-3 py-3 text-sm font-medium text-white">
+            <span>▦</span>
+            Dashboard
+        </a>
+
+        <a href="{% url 'books_catalogue' %}"
+           class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-slate-300 hover:bg-white/10 hover:text-white">
+            <span>▤</span>
+            Books Catalogue
+        </a>
+
+        <a href="{% url 'reference_data' %}"
+           class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-slate-300 hover:bg-white/10 hover:text-white">
+           <span>📑</span> 
+           Reference Data
+        </a>
+
+        <a href="#"
+           class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-slate-300 hover:bg-white/10 hover:text-white">
+            <span>♙</span>
+            Members
+        </a>
+
+        <p class="mb-3 mt-8 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Circulation
+        </p>
+
+        <a href="#"
+           class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-slate-300 hover:bg-white/10 hover:text-white">
+            <span>⇄</span>
+            Issue & Return
+        </a>
+
+        <a href="#"
+           class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-slate-300 hover:bg-white/10 hover:text-white">
+            <span>▣</span>
+            Reservations
+        </a>
+
+        <a href="#"
+           class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-slate-300 hover:bg-white/10 hover:text-white">
+            <span>₹</span>
+            Fines & Payments
+        </a>
+
+        <p class="mb-3 mt-8 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Management
+        </p>
+
+        <a href="#"
+           class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-slate-300 hover:bg-white/10 hover:text-white">
+            <span>▥</span>
+            Reports
+        </a>
+
+        <a href="#"
+           class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-slate-300 hover:bg-white/10 hover:text-white">
+            <span>⚙</span>
+            Settings
+        </a>
+
+    </nav>
+
+    <!-- Footer -->
+    <div class="border-t border-white/10 p-4">
+        <a href="{% url 'member_logout' %}"
+           class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-slate-300 hover:bg-red-500/10 hover:text-red-400">
+            <span>↪</span>
+            Sign out
+        </a>
+    </div>
+
+</aside>
+
+<!-- Mobile overlay -->
+<div id="sidebar-overlay"
+     class="fixed inset-0 z-40 hidden bg-black/50 lg:hidden">
+</div>

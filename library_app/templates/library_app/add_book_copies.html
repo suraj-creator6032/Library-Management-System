@@ -1,0 +1,86 @@
+
+{% extends 'library_app/base.html' %}
+
+{% block title %}Add Physical Copies | Library Management System{% endblock %}
+
+{% block content %}
+
+<section class="mb-7">
+    <a href="{% url 'book_detail' book.book_id %}"
+       class="text-sm font-medium text-indigo-600 hover:text-indigo-800">
+        ← Back to Book Details
+    </a>
+
+    <h1 class="mt-3 text-2xl font-bold text-slate-900">
+        Add Physical Copies
+    </h1>
+
+    <p class="mt-1 text-sm text-slate-500">
+        Register additional copies of {{ book.title }}.
+    </p>
+</section>
+
+<section class="max-w-2xl rounded-xl border border-border bg-white p-6 shadow-sm">
+
+    <div class="mb-6 rounded-lg bg-slate-50 p-4">
+        <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+            Selected Book
+        </p>
+
+        <p class="mt-1 font-semibold text-slate-800">
+            {{ book.title }}
+        </p>
+
+        <p class="mt-1 text-sm text-slate-500">
+            ISBN: {{ book.isbn|default:"Not available" }}
+        </p>
+    </div>
+
+    <form method="POST" class="space-y-5">
+        {% csrf_token %}
+
+        <div>
+            <label for="{{ form.accession_numbers.id_for_label }}"
+                   class="mb-2 block text-sm font-medium text-slate-700">
+                Accession Numbers
+            </label>
+
+            {{ form.accession_numbers }}
+
+            <p class="mt-1 text-xs text-slate-400">
+                {{ form.accession_numbers.help_text }}
+            </p>
+
+            {% for error in form.accession_numbers.errors %}
+                <p class="mt-1 text-xs text-rose-600">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div>
+            <label for="{{ form.shelf_location.id_for_label }}"
+                   class="mb-2 block text-sm font-medium text-slate-700">
+                Shelf Location
+            </label>
+
+            {{ form.shelf_location }}
+
+            {% for error in form.shelf_location.errors %}
+                <p class="mt-1 text-xs text-rose-600">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div class="flex justify-end gap-3 pt-3">
+            <a href="{% url 'book_detail' book.book_id %}"
+               class="rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50">
+                Cancel
+            </a>
+
+            <button type="submit"
+                    class="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">
+                Register Copies
+            </button>
+        </div>
+    </form>
+</section>
+
+{% endblock %}

@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+/* Scan Django templates for Tailwind classes */
+@source "../../../library_app/templates";
+
+@theme {
+    --font-sans: "Inter", sans-serif;
+
+    --color-primary: #4F46E5;
+    --color-sidebar: #111827;
+    --color-page: #F8FAFC;
+    --color-text-main: #0F172A;
+    --color-text-muted: #64748B;
+    --color-border: #E2E8F0;
+}

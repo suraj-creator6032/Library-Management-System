@@ -1,26 +1,83 @@
-# Python
+
+# ==========================================
+# PYTHON
+# ==========================================
+
 __pycache__/
 *.py[cod]
-*.pyo
+*$py.class
 
-# Virtual environment
-library/
-venv/
-.venv/
+# Virtual environments
+/library/
+/venv/
+/.venv/
+env/
 
-# Environment variables and secrets
+# Python testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+
+# ==========================================
+# DJANGO
+# ==========================================
+
+*.log
+db.sqlite3
+db.sqlite3-journal
+
+# Collected static files
+/staticfiles/
+
+# Uploaded media files (local development)
+/media/
+
+
+# ==========================================
+# ENVIRONMENT VARIABLES AND SECRETS
+# ==========================================
+
 .env
 .env.*
+!.env.example
 
-# Django
-staticfiles/
-media/
-*.log
 
-# IDE
+# ==========================================
+# NODE.JS / TAILWIND
+# ==========================================
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+
+# ==========================================
+# IDE AND EDITOR
+# ==========================================
+
 .vscode/
 .idea/
+*.sublime-workspace
+*.sublime-project
 
-# OS
+
+# ==========================================
+# OPERATING SYSTEM
+# ==========================================
+
 .DS_Store
 Thumbs.db
+Desktop.ini
+
+
+# ==========================================
+# TEMPORARY FILES
+# ==========================================
+
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo

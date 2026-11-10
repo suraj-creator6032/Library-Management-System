@@ -1,0 +1,255 @@
+
+{% extends 'library_app/base.html' %}
+
+{% block title %}Books Catalogue | Library Management System{% endblock %}
+
+{% block content %}
+
+<!-- Page heading -->
+<section class="mb-7 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-900">
+            Books Catalogue
+        </h1>
+        <p class="mt-1 text-sm text-slate-500">
+            Browse and search books available in the college library.
+        </p>
+    </div>
+
+    {% if member.member_type == 'LIBRARIAN' %}
+        <a href="{% url 'add_book' %}"
+           class="inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700">
+            + Add New Book
+        </a>
+    {% endif %}
+</section>
+
+<!-- Search and filter -->
+<section class="mb-6 rounded-xl border border-border bg-white p-5 shadow-sm">
+
+    <form method="GET" action="{% url 'books_catalogue' %}"
+          class="grid grid-cols-1 gap-4 md:grid-cols-12">
+
+        <div class="md:col-span-7">
+            <label for="search"
+                   class="mb-2 block text-sm font-medium text-slate-700">
+                Search books
+            </label>
+
+            <input
+                type="search"
+                id="search"
+                name="q"
+                value="{{ search_query }}"
+                placeholder="Search by title, ISBN or author..."
+                class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+            >
+        </div>
+
+        <div class="md:col-span-3">
+            <label for="category"
+                   class="mb-2 block text-sm font-medium text-slate-700">
+                Category
+            </label>
+
+            <select
+                id="category"
+                name="category"
+                class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+            >
+                <option value="">All categories</option>
+
+                {% for category in categories %}
+                    <option
+                        value="{{ category.category_id }}"
+                        {% if selected_category == category.category_id|stringformat:"s" %}selected{% endif %}
+                    >
+                        {{ category.category_name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="flex items-end gap-2 md:col-span-2">
+            <button
+                type="submit"
+                class="flex-1 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700"
+            >
+                Search
+            </button>
+
+            <a
+                href="{% url 'books_catalogue' %}"
+                class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+            >
+                Reset
+            </a>
+        </div>
+
+    </form>
+</section>
+
+<!-- Results information -->
+<div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+    <p class="text-sm text-slate-500">
+        Showing
+        <span class="font-semibold text-slate-800">
+            {{ page_obj.start_index }}–{{ page_obj.end_index }}
+        </span>
+        of
+        <span class="font-semibold text-slate-800">
+            {{ page_obj.paginator.count }}
+        </span>
+        book titles
+    </p>
+</div>
+
+<!-- Books list -->
+<section class="overflow-hidden rounded-xl border border-border bg-white shadow-sm">
+
+    {% if page_obj %}
+
+        <div class="overflow-x-auto">
+            <table class="w-full min-w-[850px] text-left">
+
+                <thead class="border-b border-border bg-slate-50">
+                    <tr>
+                        <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            Book
+                        </th>
+
+                        <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            Category
+                        </th>
+
+                        <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            Publisher
+                        </th>
+
+                        <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            Year
+                        </th>
+
+                        <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            Total Copies
+                        </th>
+
+                        <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            Available
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody class="divide-y divide-slate-100">
+
+                    {% for book in page_obj %}
+
+                        <tr class="transition hover:bg-slate-50">
+
+                            <td class="px-6 py-4">
+                                <a
+                                    href="{% url 'book_detail' book.book_id %}"
+                                    class="text-sm font-semibold text-indigo-600 transition hover:text-indigo-800 hover:underline"
+                                    >
+                                    {{ book.title }}
+                                </a>
+
+                                <p class="mt-1 text-xs text-slate-400">
+                                    ISBN:
+                                    {{ book.isbn|default:"Not available" }}
+                                </p>
+                            </td>
+
+                            <td class="px-6 py-4 text-sm text-slate-600">
+                                {{ book.category.category_name }}
+                            </td>
+
+                            <td class="px-6 py-4 text-sm text-slate-600">
+                                {{ book.publisher.publisher_name }}
+                            </td>
+
+                            <td class="px-6 py-4 text-sm text-slate-600">
+                                {{ book.publication_year|default:"—" }}
+                            </td>
+
+                            <td class="px-6 py-4 text-sm font-medium text-slate-700">
+                                {{ book.total_copies }}
+                            </td>
+
+                            <td class="px-6 py-4">
+                                {% if book.available_copies > 0 %}
+                                    <span class="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                                        {{ book.available_copies }} available
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700">
+                                        Unavailable
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+
+    {% else %}
+
+        <div class="px-6 py-16 text-center">
+            <h3 class="text-lg font-semibold text-slate-800">
+                No books found
+            </h3>
+
+            <p class="mt-2 text-sm text-slate-500">
+                Try another search term or select a different category.
+            </p>
+
+            <a href="{% url 'books_catalogue' %}"
+               class="mt-5 inline-block rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">
+                Clear filters
+            </a>
+        </div>
+
+    {% endif %}
+
+</section>
+
+<!-- Pagination -->
+{% if page_obj.has_other_pages %}
+
+    <nav class="mt-6 flex flex-wrap items-center justify-between gap-4"
+         aria-label="Book catalogue pagination">
+
+        <p class="text-sm text-slate-500">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </p>
+
+        <div class="flex items-center gap-2">
+
+            {% if page_obj.has_previous %}
+                <a
+                    href="?q={{ search_query|urlencode }}&category={{ selected_category }}&page={{ page_obj.previous_page_number }}"
+                    class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
+                >
+                    Previous
+                </a>
+            {% endif %}
+
+            {% if page_obj.has_next %}
+                <a
+                    href="?q={{ search_query|urlencode }}&category={{ selected_category }}&page={{ page_obj.next_page_number }}"
+                    class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
+                >
+                    Next
+                </a>
+            {% endif %}
+
+        </div>
+    </nav>
+
+{% endif %}
+
+{% endblock %}

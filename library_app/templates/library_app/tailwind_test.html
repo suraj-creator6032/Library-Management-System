@@ -1,0 +1,30 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tailwind Test</title>
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+</head>
+
+<body class="min-h-screen bg-slate-950 flex items-center justify-center">
+
+    <div class="bg-white rounded-2xl p-10 shadow-xl text-center">
+        <h1 class="text-3xl font-bold text-indigo-600">
+            Library Management System
+        </h1>
+
+        <p class="mt-3 text-slate-600">
+            Tailwind CSS is working successfully!
+        </p>
+
+        <button class="mt-6 rounded-lg bg-indigo-600 px-6 py-3
+                       font-semibold text-white hover:bg-indigo-700">
+            Get Started
+        </button>
+    </div>
+
+</body>
+</html>

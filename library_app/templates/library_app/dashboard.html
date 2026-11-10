@@ -1,0 +1,165 @@
+
+{% extends 'library_app/base.html' %}
+
+{% block title %}Dashboard | Library Management System{% endblock %}
+
+{% block content %}
+
+<!-- Welcome section -->
+<section class="mb-8">
+    <h1 class="text-2xl font-bold text-slate-900">
+        Welcome, {{ member.full_name }}
+    </h1>
+    <p class="mt-1 text-sm text-slate-500">
+        Here's an overview of your library management system.
+    </p>
+</section>
+
+<!-- Statistics -->
+<section class="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+
+    <div class="rounded-xl border border-border bg-white p-5 shadow-sm">
+        <p class="text-sm font-medium text-slate-500">Total Book Titles</p>
+        <p class="mt-3 text-3xl font-bold text-slate-900">
+            {{ total_books }}
+        </p>
+        <p class="mt-2 text-xs text-slate-400">
+            Different titles in the catalogue
+        </p>
+    </div>
+
+    <div class="rounded-xl border border-border bg-white p-5 shadow-sm">
+        <p class="text-sm font-medium text-slate-500">Available Copies</p>
+        <p class="mt-3 text-3xl font-bold text-emerald-600">
+            {{ available_copies }}
+        </p>
+        <p class="mt-2 text-xs text-slate-400">
+            Out of {{ total_copies }} physical copies
+        </p>
+    </div>
+
+    <div class="rounded-xl border border-border bg-white p-5 shadow-sm">
+        <p class="text-sm font-medium text-slate-500">Books Currently Issued</p>
+        <p class="mt-3 text-3xl font-bold text-indigo-600">
+            {{ issued_loans }}
+        </p>
+        <p class="mt-2 text-xs text-slate-400">
+            Active library loans
+        </p>
+    </div>
+
+    <div class="rounded-xl border border-border bg-white p-5 shadow-sm">
+        <p class="text-sm font-medium text-slate-500">Pending Reservations</p>
+        <p class="mt-3 text-3xl font-bold text-amber-600">
+            {{ pending_reservations }}
+        </p>
+        <p class="mt-2 text-xs text-slate-400">
+            Reservations awaiting processing
+        </p>
+    </div>
+
+</section>
+
+<!-- Outstanding fines -->
+<section class="mb-8 rounded-xl border border-border bg-white p-5 shadow-sm">
+    <p class="text-sm font-medium text-slate-500">
+        Total Outstanding Fines
+    </p>
+    <p class="mt-2 text-3xl font-bold text-rose-600">
+        ₹{{ outstanding_fines|floatformat:2 }}
+    </p>
+    <p class="mt-1 text-xs text-slate-400">
+        Remaining unpaid fine balance across the library
+    </p>
+</section>
+
+<!-- Account information -->
+<section class="rounded-xl border border-border bg-white p-6 shadow-sm">
+
+    <div class="mb-6">
+        <h2 class="text-lg font-semibold text-slate-900">
+            Account Information
+        </h2>
+        <p class="mt-1 text-sm text-slate-500">
+            Your registered library membership details.
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+
+        <div>
+            <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                Full Name
+            </p>
+            <p class="mt-1 text-sm font-semibold text-slate-800">
+                {{ member.full_name }}
+            </p>
+        </div>
+
+        <div>
+            <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                College ID
+            </p>
+            <p class="mt-1 text-sm font-semibold text-slate-800">
+                {{ member.college_id }}
+            </p>
+        </div>
+
+        <div>
+            <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                Email Address
+            </p>
+            <p class="mt-1 break-all text-sm font-semibold text-slate-800">
+                {{ member.email }}
+            </p>
+        </div>
+
+        <div>
+            <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                Member Type
+            </p>
+            <p class="mt-1 text-sm font-semibold text-slate-800">
+                {{ member.member_type }}
+            </p>
+        </div>
+
+        <div>
+            <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                Phone Number
+            </p>
+            <p class="mt-1 text-sm font-semibold text-slate-800">
+                {{ member.phone|default:"Not provided" }}
+            </p>
+        </div>
+
+        <div>
+            <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                Joining Date
+            </p>
+            <p class="mt-1 text-sm font-semibold text-slate-800">
+                {{ member.joining_date|date:"d M Y" }}
+            </p>
+        </div>
+
+        <div>
+            <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                Membership Status
+            </p>
+            <p class="mt-1 text-sm font-semibold text-slate-800">
+                {{ member.membership_status }}
+            </p>
+        </div>
+
+        <div>
+            <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                Department
+            </p>
+            <p class="mt-1 text-sm font-semibold text-slate-800">
+                {{ member.department.department_name|default:"Not assigned" }}
+            </p>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}
