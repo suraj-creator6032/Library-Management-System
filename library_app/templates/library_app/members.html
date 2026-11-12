@@ -1,0 +1,513 @@
+
+{% extends 'library_app/base.html' %}
+
+{% block title %}Members | Library Management System{% endblock %}
+
+{% block page_heading %}Members{% endblock %}
+
+{% block content %}
+
+<div class="space-y-6">
+
+    <!-- PAGE HEADER -->
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900">
+                Members Directory
+            </h1>
+            <p class="mt-1 text-sm text-slate-500">
+                Manage and view library membership records.
+            </p>
+            
+        </div>
+        <a href="{% url 'add_member' %}"
+            class="inline-flex items-center justify-center rounded-lg bg-indigo-600
+                    px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">
+                + Add Member
+            </a>
+    </div>
+
+
+    <!-- STATISTICS -->
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+
+        <!-- Total Members -->
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-slate-500">
+                        Total Members
+                    </p>
+                    <p class="mt-2 text-3xl font-bold text-slate-900">
+                        {{ total_members }}
+                    </p>
+                </div>
+
+                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="h-6 w-6"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor"
+                         stroke-width="1.8">
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M17 20h5v-2a4 4 0 00-4-4h-1M9 20H2v-2a4 4 0 014-4h3m8-9a4 4 0 11-8 0 4 4 0 018 0zm5 4a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Members -->
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-slate-500">
+                        Active Members
+                    </p>
+                    <p class="mt-2 text-3xl font-bold text-slate-900">
+                        {{ active_members }}
+                    </p>
+                </div>
+
+                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="h-6 w-6"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor"
+                         stroke-width="1.8">
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Students -->
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-slate-500">
+                        Students
+                    </p>
+                    <p class="mt-2 text-3xl font-bold text-slate-900">
+                        {{ student_count }}
+                    </p>
+                </div>
+
+                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-50 text-sky-600">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="h-6 w-6"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor"
+                         stroke-width="1.8">
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M12 14l9-5-9-5-9 5 9 5zm0 0v6m-6-9v5c3 3 9 3 12 0v-5" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Faculty and Librarians -->
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-slate-500">
+                        Faculty & Librarians
+                    </p>
+                    <p class="mt-2 text-3xl font-bold text-slate-900">
+                        {{ faculty_count|add:librarian_count }}
+                    </p>
+                    <p class="mt-1 text-xs text-slate-400">
+                        {{ faculty_count }} Faculty · {{ librarian_count }} Librarians
+                    </p>
+                </div>
+
+                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="h-6 w-6"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor"
+                         stroke-width="1.8">
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M16 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2m12-13a4 4 0 11-8 0 4 4 0 018 0zm6 13v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- MEMBERS TABLE CARD -->
+    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+
+        <!-- SEARCH AND FILTERS -->
+        <div class="border-b border-slate-200 p-5">
+
+            <form method="GET" action="{% url 'members_directory' %}"
+                  class="space-y-4">
+
+                <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-5">
+
+                    <!-- Search -->
+                    <div class="relative xl:col-span-2">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor"
+                             stroke-width="1.8">
+                            <path stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+
+                        <input
+                            type="text"
+                            name="q"
+                            value="{{ search_query }}"
+                            placeholder="Search name, ID, email or phone..."
+                            class="w-full rounded-lg border border-slate-300 bg-white py-2.5 pl-10 pr-4 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                        >
+                    </div>
+
+                    <!-- Member Type -->
+                    <select
+                        name="type"
+                        class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
+
+                        <option value="">All Member Types</option>
+
+                        <option value="STUDENT"
+                            {% if selected_type == 'STUDENT' %}selected{% endif %}>
+                            Students
+                        </option>
+
+                        <option value="FACULTY"
+                            {% if selected_type == 'FACULTY' %}selected{% endif %}>
+                            Faculty
+                        </option>
+
+                        <option value="LIBRARIAN"
+                            {% if selected_type == 'LIBRARIAN' %}selected{% endif %}>
+                            Librarians
+                        </option>
+                    </select>
+
+                    <!-- Department -->
+                    <select
+                        name="department"
+                        class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
+
+                        <option value="">All Departments</option>
+
+                        {% for department in departments %}
+                            <option
+                                value="{{ department.department_id }}"
+                                {% if selected_department == department.department_id|stringformat:"s" %}selected{% endif %}>
+                                {{ department.department_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <!-- Membership Status -->
+                    <select
+                        name="status"
+                        class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
+
+                        <option value="">All Statuses</option>
+
+                        <option value="ACTIVE"
+                            {% if selected_status == 'ACTIVE' %}selected{% endif %}>
+                            Active
+                        </option>
+
+                        <option value="INACTIVE"
+                            {% if selected_status == 'INACTIVE' %}selected{% endif %}>
+                            Inactive
+                        </option>
+                    </select>
+
+                </div>
+
+                <!-- Filter Buttons -->
+                <div class="flex flex-wrap items-center gap-2">
+
+                    <button
+                        type="submit"
+                        class="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700">
+
+                        Apply Filters
+                    </button>
+
+                    <a
+                        href="{% url 'members_directory' %}"
+                        class="rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50">
+
+                        Reset
+                    </a>
+
+                    <span class="ml-auto text-sm text-slate-500">
+                        {{ page_obj.paginator.count }} result{{ page_obj.paginator.count|pluralize }}
+                    </span>
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        <!-- TABLE -->
+        <div class="overflow-x-auto">
+
+            <table class="min-w-full divide-y divide-slate-200">
+
+                <thead class="bg-slate-50">
+
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                            Member
+                        </th>
+
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                            College ID
+                        </th>
+
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                            Contact
+                        </th>
+
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                            Department
+                        </th>
+
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                            Member Type
+                        </th>
+
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                            Status
+                        </th>
+                    </tr>
+
+                </thead>
+
+                <tbody class="divide-y divide-slate-100 bg-white">
+
+                    {% for item in members %}
+
+                        <tr class="transition hover:bg-slate-50">
+
+                            <!-- Member Name -->
+                            <td class="whitespace-nowrap px-6 py-4">
+
+                                <div class="flex items-center gap-3">
+
+                                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-sm font-bold text-indigo-700">
+                                        {{ item.full_name|slice:":1"|upper }}
+                                    </div>
+
+                                    <div>
+                                        <a
+                                            href="{% url 'member_detail' item.member_id %}"
+                                            class="text-sm font-semibold text-slate-900 hover:text-indigo-600"
+                                        >
+                                            {{ item.full_name }}
+                                        </a>
+
+                                        <p class="mt-1 text-xs text-slate-500">
+                                            Joined {{ item.joining_date|date:"d M Y" }}
+                                        </p>
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                            <!-- College ID -->
+                            <td class="whitespace-nowrap px-6 py-4">
+                                <span class="text-sm font-medium text-slate-700">
+                                    {{ item.college_id }}
+                                </span>
+                            </td>
+
+                            <!-- Contact -->
+                            <td class="px-6 py-4">
+                                <p class="text-sm text-slate-700">
+                                    {{ item.email }}
+                                </p>
+
+                                <p class="mt-1 text-xs text-slate-500">
+                                    {{ item.phone|default:"No phone provided" }}
+                                </p>
+                            </td>
+
+                            <!-- Department -->
+                            <td class="whitespace-nowrap px-6 py-4">
+                                <span class="text-sm text-slate-600">
+                                    {{ item.department.department_name|default:"Not assigned" }}
+                                </span>
+                            </td>
+
+                            <!-- Member Type -->
+                            <td class="whitespace-nowrap px-6 py-4">
+
+                                {% if item.member_type == 'STUDENT' %}
+                                    <span class="inline-flex rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
+                                        Student
+                                    </span>
+
+                                {% elif item.member_type == 'FACULTY' %}
+                                    <span class="inline-flex rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700">
+                                        Faculty
+                                    </span>
+
+                                {% elif item.member_type == 'LIBRARIAN' %}
+                                    <span class="inline-flex rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
+                                        Librarian
+                                    </span>
+
+                                {% else %}
+                                    <span class="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                                        {{ item.member_type }}
+                                    </span>
+                                {% endif %}
+
+                            </td>
+
+                            <!-- Membership Status -->
+                            <td class="whitespace-nowrap px-6 py-4">
+
+                                {% if item.membership_status == 'ACTIVE' %}
+                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                                        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                                        Active
+                                    </span>
+
+                                {% else %}
+                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700">
+                                        <span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span>
+                                        Inactive
+                                    </span>
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+
+                        <tr>
+                            <td colspan="6" class="px-6 py-16 text-center">
+
+                                <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                         class="h-7 w-7"
+                                         fill="none"
+                                         viewBox="0 0 24 24"
+                                         stroke="currentColor"
+                                         stroke-width="1.7">
+                                        <path stroke-linecap="round"
+                                              stroke-linejoin="round"
+                                              d="M17 20h5v-2a4 4 0 00-4-4h-1M9 20H2v-2a4 4 0 014-4h3m8-9a4 4 0 11-8 0 4 4 0 018 0zm5 4a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </div>
+
+                                <h3 class="mt-4 text-sm font-semibold text-slate-900">
+                                    No members found
+                                </h3>
+
+                                <p class="mt-1 text-sm text-slate-500">
+                                    Try changing your search or filter criteria.
+                                </p>
+
+                            </td>
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- PAGINATION -->
+        {% if page_obj.paginator.num_pages > 1 %}
+
+            <div class="flex flex-col gap-3 border-t border-slate-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+
+                <p class="text-sm text-slate-500">
+                    Showing
+                    <span class="font-semibold text-slate-700">
+                        {{ page_obj.start_index }}
+                    </span>
+                    to
+                    <span class="font-semibold text-slate-700">
+                        {{ page_obj.end_index }}
+                    </span>
+                    of
+                    <span class="font-semibold text-slate-700">
+                        {{ page_obj.paginator.count }}
+                    </span>
+                    members
+                </p>
+
+                <div class="flex flex-wrap items-center gap-1">
+
+                    {% if page_obj.has_previous %}
+                        <a
+                            href="?q={{ search_query|urlencode }}&type={{ selected_type|urlencode }}&department={{ selected_department|urlencode }}&status={{ selected_status|urlencode }}&page={{ page_obj.previous_page_number }}"
+                            class="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-600 hover:bg-slate-50">
+                            Previous
+                        </a>
+                    {% endif %}
+
+                    {% for page_number in page_obj.paginator.page_range %}
+
+                        {% if page_number == page_obj.number %}
+
+                            <span class="rounded-lg bg-indigo-600 px-3 py-2 text-sm font-semibold text-white">
+                                {{ page_number }}
+                            </span>
+
+                        {% elif page_number >= page_obj.number|add:"-2" and page_number <= page_obj.number|add:"2" %}
+
+                            <a
+                                href="?q={{ search_query|urlencode }}&type={{ selected_type|urlencode }}&department={{ selected_department|urlencode }}&status={{ selected_status|urlencode }}&page={{ page_number }}"
+                                class="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-600 hover:bg-slate-50">
+                                {{ page_number }}
+                            </a>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <a
+                            href="?q={{ search_query|urlencode }}&type={{ selected_type|urlencode }}&department={{ selected_department|urlencode }}&status={{ selected_status|urlencode }}&page={{ page_obj.next_page_number }}"
+                            class="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-600 hover:bg-slate-50">
+                            Next
+                        </a>
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

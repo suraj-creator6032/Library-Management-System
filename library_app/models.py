@@ -82,6 +82,9 @@ class Departments(models.Model):
         managed = False
         db_table = 'departments'
 
+    def __str__(self):
+        return self.department_name
+
 
 class Fines(models.Model):
     fine_id = models.AutoField(primary_key=True)

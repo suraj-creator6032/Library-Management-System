@@ -1,12 +1,15 @@
 
 from django import forms
-
+from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
 from .models import (
     Books,
     Publishers,
     Categories,
     Authors,
     BookCopies,
+    Members,
+    Departments
 )
 
 
@@ -915,3 +918,219 @@ def apply_form_styles(fields):
 #             )
 
 #         return name
+
+
+class MemberRegistrationForm(forms.ModelForm):
+    username = forms.CharField(
+        max_length=150,
+        label="Username",
+        widget=forms.TextInput(attrs={
+            "placeholder": "Create a unique username",
+            "autocomplete": "username",
+        }),
+    )
+
+    password1 = forms.CharField(
+        label="Password",
+        widget=forms.PasswordInput(attrs={
+            "placeholder": "Create a password",
+            "autocomplete": "new-password",
+        }),
+    )
+
+    password2 = forms.CharField(
+        label="Confirm Password",
+        widget=forms.PasswordInput(attrs={
+            "placeholder": "Enter the password again",
+            "autocomplete": "new-password",
+        }),
+    )
+
+    MEMBER_TYPE_CHOICES = [
+        ("STUDENT", "Student"),
+        ("FACULTY", "Faculty"),
+        ("LIBRARIAN", "Librarian"),
+    ]
+
+    MEMBERSHIP_STATUS_CHOICES = [
+        ("ACTIVE", "Active"),
+        ("INACTIVE", "Inactive"),
+    ]
+
+    member_type = forms.ChoiceField(
+        choices=MEMBER_TYPE_CHOICES,
+        widget=forms.Select(),
+    )
+
+    membership_status = forms.ChoiceField(
+        choices=MEMBERSHIP_STATUS_CHOICES,
+        initial="ACTIVE",
+        widget=forms.Select(),
+    )
+
+    department = forms.ModelChoiceField(
+        queryset=Departments.objects.order_by("department_name"),
+        required=False,
+        empty_label="Select department",
+    )
+
+    class Meta:
+        model = Members
+        fields = [
+            "college_id",
+            "full_name",
+            "email",
+            "phone",
+            "member_type",
+            "department",
+            "joining_date",
+            "membership_status",
+        ]
+        widgets = {
+            "college_id": forms.TextInput(attrs={
+                "placeholder": "Enter college ID",
+            }),
+            "full_name": forms.TextInput(attrs={
+                "placeholder": "Enter full name",
+            }),
+            "email": forms.EmailInput(attrs={
+                "placeholder": "Enter email address",
+            }),
+            "phone": forms.TextInput(attrs={
+                "placeholder": "Enter phone number",
+            }),
+            "joining_date": forms.DateInput(attrs={
+                "type": "date",
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        apply_form_styles(self.fields)
+
+    def clean_username(self):
+        username = self.cleaned_data["username"].strip()
+        User = get_user_model()
+
+        if User._default_manager.filter(username__iexact=username).exists():
+            raise forms.ValidationError(
+                "This username is already taken. Choose another username."
+            )
+
+        return username
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("The passwords do not match.")
+
+        return password2
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        password = cleaned_data.get("password1")
+        username = cleaned_data.get("username")
+
+        if password and username:
+            User = get_user_model()
+            temporary_user = User(username=username)
+
+            try:
+                validate_password(password, user=temporary_user)
+            except forms.ValidationError as error:
+                self.add_error("password1", error)
+
+        return cleaned_data
+
+    def clean_college_id(self):
+        return self.cleaned_data["college_id"].strip()
+
+    def clean_full_name(self):
+        return self.cleaned_data["full_name"].strip()
+
+    def clean_email(self):
+        return self.cleaned_data["email"].strip().lower()
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get("phone", "")
+        return phone.strip() or None
+
+
+
+class MemberUpdateForm(forms.ModelForm):
+    MEMBER_TYPE_CHOICES = [
+        ("STUDENT", "Student"),
+        ("FACULTY", "Faculty"),
+        ("LIBRARIAN", "Librarian"),
+    ]
+
+    MEMBERSHIP_STATUS_CHOICES = [
+        ("ACTIVE", "Active"),
+        ("INACTIVE", "Inactive"),
+    ]
+
+    member_type = forms.ChoiceField(
+        choices=MEMBER_TYPE_CHOICES,
+        widget=forms.Select(),
+    )
+
+    membership_status = forms.ChoiceField(
+        choices=MEMBERSHIP_STATUS_CHOICES,
+        widget=forms.Select(),
+    )
+
+    department = forms.ModelChoiceField(
+        queryset=Departments.objects.order_by("department_name"),
+        required=False,
+        empty_label="Select department",
+    )
+
+    class Meta:
+        model = Members
+        fields = [
+            "college_id",
+            "full_name",
+            "email",
+            "phone",
+            "member_type",
+            "department",
+            "joining_date",
+            "membership_status",
+        ]
+        widgets = {
+            "college_id": forms.TextInput(attrs={
+                "placeholder": "Enter college ID",
+            }),
+            "full_name": forms.TextInput(attrs={
+                "placeholder": "Enter full name",
+            }),
+            "email": forms.EmailInput(attrs={
+                "placeholder": "Enter email address",
+            }),
+            "phone": forms.TextInput(attrs={
+                "placeholder": "Enter phone number",
+            }),
+            "joining_date": forms.DateInput(attrs={
+                "type": "date",
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        apply_form_styles(self.fields)
+
+    def clean_college_id(self):
+        return self.cleaned_data["college_id"].strip()
+
+    def clean_full_name(self):
+        return self.cleaned_data["full_name"].strip()
+
+    def clean_email(self):
+        return self.cleaned_data["email"].strip().lower()
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get("phone", "")
+        return phone.strip() or None

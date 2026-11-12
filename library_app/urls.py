@@ -18,4 +18,8 @@ urlpatterns = [
     path('reference-data/<str:record_type>/add/', views.manage_reference ,name='add_reference'),
     path('reference-data/<str:record_type>/<int:record_id>/edit/', views.manage_reference, name='edit_reference'),
     path('books/<int:book_id>/delete/', views.delete_book, name='delete_book'),
+    path('members/', views.members_directory, name='members_directory'),
+    path('members/<int:member_id>/',views.member_detail, name='member_detail'),
+    path('members/add/',views.add_member, name='add_member'),
+    path('members/<int:member_id>/edit/', views.edit_member, name='edit_member'),
 ]

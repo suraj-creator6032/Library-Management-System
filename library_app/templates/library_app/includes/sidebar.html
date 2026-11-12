@@ -41,13 +41,13 @@
            <span>📑</span> 
            Reference Data
         </a>
-
-        <a href="#"
-           class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-slate-300 hover:bg-white/10 hover:text-white">
-            <span>♙</span>
-            Members
-        </a>
-
+        {% if member.member_type == 'LIBRARIAN' %}
+            <a href="{% url 'members_directory' %}"
+            class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-slate-300 hover:bg-white/10 hover:text-white">
+                <span>♙</span>
+                Members
+            </a>
+        {% endif %}
         <p class="mb-3 mt-8 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
             Circulation
         </p>

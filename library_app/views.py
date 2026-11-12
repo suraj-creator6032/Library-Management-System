@@ -19,6 +19,7 @@ from django.views.decorators.http import require_POST
 from django.db import transaction, DatabaseError
 from django.http import JsonResponse
 from types import SimpleNamespace
+from django.contrib.auth import get_user_model
 
 from .forms import (
     BookCreateForm,
@@ -27,6 +28,8 @@ from .forms import (
     AuthorForm,
     PublisherForm,
     CategoryForm,
+    MemberRegistrationForm,
+    MemberUpdateForm,
 )
 
 from .models import (
@@ -40,6 +43,9 @@ from .models import (
     BookAuthors,
     Authors,
     Publishers,
+    Members,
+    Departments,
+    
 )
 
 
@@ -244,6 +250,373 @@ def member_logout(request):
     return redirect('member_login')
 
 
+@librarian_required
+def members_directory(request):
+
+    # 1. Read search and filter parameters.
+    search_query = request.GET.get('q', '').strip()
+    selected_type = request.GET.get('type', '').strip()
+    selected_department = request.GET.get('department', '').strip()
+    selected_status = request.GET.get('status', '').strip()
+
+    # 2. Start with all members and retrieve their departments
+    # efficiently using select_related().
+    members = Members.objects.select_related(
+        'department'
+    ).all()
+
+    # 3. Search by name, college ID, email or phone.
+    if search_query:
+        members = members.filter(
+            Q(full_name__icontains=search_query)
+            | Q(college_id__icontains=search_query)
+            | Q(email__icontains=search_query)
+            | Q(phone__icontains=search_query)
+        )
+
+    # 4. Apply member-type filter.
+    valid_member_types = ['STUDENT', 'FACULTY', 'LIBRARIAN']
+
+    if selected_type in valid_member_types:
+        members = members.filter(member_type=selected_type)
+    else:
+        selected_type = ''
+
+    # 5. Apply department filter.
+    if selected_department.isdigit():
+        members = members.filter(
+            department_id=int(selected_department)
+        )
+    else:
+        selected_department = ''
+
+    # 6. Apply membership-status filter.
+    valid_statuses = ['ACTIVE', 'INACTIVE']
+
+    if selected_status in valid_statuses:
+        members = members.filter(
+            membership_status=selected_status
+        )
+    else:
+        selected_status = ''
+
+    # 7. Order and paginate results.
+    members = members.order_by('full_name', 'member_id')
+
+    paginator = Paginator(members, 10)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    # 8. Directory statistics.
+    total_members = Members.objects.count()
+
+    active_members = Members.objects.filter(
+        membership_status='ACTIVE'
+    ).count()
+
+    student_count = Members.objects.filter(
+        member_type='STUDENT'
+    ).count()
+
+    faculty_count = Members.objects.filter(
+        member_type='FACULTY'
+    ).count()
+
+    librarian_count = Members.objects.filter(
+        member_type='LIBRARIAN'
+    ).count()
+
+    # 9. Department dropdown options.
+    departments = Departments.objects.order_by(
+        'department_name'
+    )
+
+    # 10. Current librarian's membership record.
+    member = request.user.profile.member
+
+    context = {
+        'page_title': 'Members',
+
+        'members': page_obj,
+        'page_obj': page_obj,
+
+        'search_query': search_query,
+        'selected_type': selected_type,
+        'selected_department': selected_department,
+        'selected_status': selected_status,
+
+        'departments': departments,
+
+        'total_members': total_members,
+        'active_members': active_members,
+        'student_count': student_count,
+        'faculty_count': faculty_count,
+        'librarian_count': librarian_count,
+
+        'member': member,
+    }
+
+    return render(
+        request,
+        'library_app/members.html',
+        context
+    )
+
+@login_required
+@librarian_required
+def add_member(request):
+    if request.method == "POST":
+        form = MemberRegistrationForm(request.POST)
+
+        if form.is_valid():
+
+            # Only a Django superuser can create another librarian account.
+            if (
+                form.cleaned_data["member_type"] == "LIBRARIAN"
+                and not request.user.is_superuser
+            ):
+                form.add_error(
+                    "member_type",
+                    "Only a superuser can create a librarian account."
+                )
+            else:
+                User = get_user_model()
+
+                try:
+                    with transaction.atomic():
+                        # 1. Create the library member.
+                        new_member = form.save()
+
+                        # 2. Create the individual Django login account.
+                        new_user = User(
+                            username=form.cleaned_data["username"],
+                            is_active=(
+                                new_member.membership_status == "ACTIVE"
+                            ),
+                        )
+                        new_user.set_password(
+                            form.cleaned_data["password1"]
+                        )
+                        new_user.save()
+
+                        # 3. Link the login account to the member.
+                        UserProfile.objects.create(
+                            user=new_user,
+                            member=new_member,
+                        )
+
+                    messages.success(
+                        request,
+                        f"Member '{new_member.full_name}' was created successfully."
+                    )
+                    return redirect(
+                        "member_detail",
+                        member_id=new_member.member_id
+                    )
+
+                except IntegrityError:
+                    form.add_error(
+                        None,
+                        "Could not create the member. A username, college ID, "
+                        "or email may already exist. Please check the details."
+                    )
+    else:
+        form = MemberRegistrationForm()
+
+    context = {
+        "page_title": "Add Member",
+        "form": form,
+        "member": request.user.profile.member,
+    }
+
+    return render(
+        request,
+        "library_app/add_member.html",
+        context
+    )
+
+
+@login_required
+@librarian_required
+def edit_member(request, member_id):
+    target_member = get_object_or_404(
+        Members.objects.select_related("department"),
+        member_id=member_id,
+    )
+
+    current_member = request.user.profile.member
+
+    # Only superusers may modify librarian accounts or roles.
+    if (
+        target_member.member_type == "LIBRARIAN"
+        and not request.user.is_superuser
+    ):
+        return HttpResponseForbidden(
+            "Only a superuser can modify a librarian account."
+        )
+
+    if request.method == "POST":
+        form = MemberUpdateForm(
+            request.POST,
+            instance=target_member,
+        )
+
+        if form.is_valid():
+            new_member_type = form.cleaned_data["member_type"]
+            new_status = form.cleaned_data["membership_status"]
+
+            # Only superusers may assign the librarian role.
+            if (
+                new_member_type == "LIBRARIAN"
+                and not request.user.is_superuser
+            ):
+                form.add_error(
+                    "member_type",
+                    "Only a superuser can assign the librarian role."
+                )
+
+            # Prevent a librarian from deactivating their own account.
+            elif (
+                target_member.member_id == current_member.member_id
+                and new_status == "INACTIVE"
+            ):
+                form.add_error(
+                    "membership_status",
+                    "You cannot deactivate your own account."
+                )
+
+            else:
+                try:
+                    with transaction.atomic():
+                        updated_member = form.save()
+
+                        # Synchronize the linked Django login account.
+                        try:
+                            profile = updated_member.user_profile
+                        except UserProfile.DoesNotExist:
+                            profile = None
+
+                        if profile is not None:
+                            user = profile.user
+                            user.is_active = (
+                                updated_member.membership_status == "ACTIVE"
+                            )
+                            user.save(update_fields=["is_active"])
+
+                    messages.success(
+                        request,
+                        f"Member '{updated_member.full_name}' updated successfully."
+                    )
+
+                    return redirect(
+                        "member_detail",
+                        member_id=updated_member.member_id,
+                    )
+
+                except IntegrityError:
+                    form.add_error(
+                        None,
+                        "Could not update the member. Check whether the "
+                        "college ID or email is already being used."
+                    )
+
+    else:
+        form = MemberUpdateForm(instance=target_member)
+
+    context = {
+        "page_title": "Edit Member",
+        "form": form,
+        "profile_member": target_member,
+        "member": current_member,
+    }
+
+    return render(
+        request,
+        "library_app/edit_member.html",
+        context,
+    )
+
+
+@login_required
+def member_detail(request, member_id):
+
+    # 1. Retrieve the logged-in user's library profile.
+    try:
+        current_member = request.user.profile.member
+    except UserProfile.DoesNotExist:
+        logout(request)
+        messages.error(
+            request,
+            'Your account is not linked to a library membership.'
+        )
+        return redirect('member_login')
+
+    # 2. Librarians can view any member.
+    # Students and faculty can only view their own details.
+    if current_member.member_type == 'LIBRARIAN':
+        member = get_object_or_404(
+            Members.objects.select_related('department'),
+            member_id=member_id
+        )
+    else:
+        if current_member.member_id != member_id:
+            return HttpResponseForbidden(
+                'You are not allowed to view this member profile.'
+            )
+
+        member = current_member
+
+    # 3. Retrieve the member's borrowing history.
+    loans = Loans.objects.filter(
+        member=member
+    ).select_related(
+        'copy__book'
+    ).order_by('-issue_date', '-loan_id')
+
+    # 4. Retrieve the member's reservations.
+    reservations = Reservations.objects.filter(
+        member=member
+    ).select_related(
+        'book'
+    ).order_by('-reservation_date', '-reservation_id')
+
+    # 5. Calculate membership statistics.
+    total_loans = loans.count()
+
+    active_loans = loans.filter(
+        loan_status='ISSUED'
+    ).count()
+
+    returned_loans = loans.filter(
+        loan_status='RETURNED'
+    ).count()
+
+    pending_reservations = reservations.filter(
+        reservation_status='PENDING'
+    ).count()
+
+    # 6. Retrieve recent activity.
+    recent_loans = loans[:10]
+    recent_reservations = reservations[:10]
+
+    context = {
+        'page_title': 'Member Details',
+        'member': current_member,
+        'profile_member': member,
+
+        'total_loans': total_loans,
+        'active_loans': active_loans,
+        'returned_loans': returned_loans,
+        'pending_reservations': pending_reservations,
+
+        'recent_loans': recent_loans,
+        'recent_reservations': recent_reservations,
+    }
+
+    return render(
+        request,
+        'library_app/member_detail.html',
+        context
+    )
 
 
 @login_required
@@ -1690,3 +2063,4 @@ def delete_book(request, book_id):
             'Unable to delete this book. Database constraints may prevent deletion.'
         )
         return redirect('books_catalogue')
+
