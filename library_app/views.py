@@ -30,6 +30,7 @@ from .forms import (
     CategoryForm,
     MemberRegistrationForm,
     MemberUpdateForm,
+    MemberPasswordResetForm
 )
 
 from .models import (
@@ -483,6 +484,18 @@ def edit_member(request, member_id):
                     "membership_status",
                     "You cannot deactivate your own account."
                 )
+            elif (
+                new_status == "INACTIVE"
+                and Loans.objects.filter(
+                    member=target_member,
+                    loan_status="ISSUED"
+                ).exists()
+            ):
+                form.add_error(
+                    "membership_status",
+                    "This member has outstanding issued books. "
+                    "Return all books before deactivating the membership."
+                )
 
             else:
                 try:
@@ -535,6 +548,87 @@ def edit_member(request, member_id):
         context,
     )
 
+@login_required
+@librarian_required
+def reset_member_password(request, member_id):
+    target_member = get_object_or_404(
+        Members,
+        member_id=member_id,
+    )
+
+    current_member = request.user.profile.member
+
+    # Only a superuser can reset another librarian's password.
+    if (
+        target_member.member_type == "LIBRARIAN"
+        and not request.user.is_superuser
+    ):
+        return HttpResponseForbidden(
+            "Only a superuser can reset a librarian's password."
+        )
+
+    # Prevent resetting your own password through member management.
+    if target_member.member_id == current_member.member_id:
+        messages.error(
+            request,
+            "Use your own account's password settings to change your password."
+        )
+        return redirect(
+            "member_detail",
+            member_id=target_member.member_id,
+        )
+
+    # Find the Django account linked to this library member.
+    try:
+        profile = UserProfile.objects.select_related("user").get(
+            member=target_member
+        )
+    except UserProfile.DoesNotExist:
+        messages.error(
+            request,
+            "This member does not have a linked login account."
+        )
+        return redirect(
+            "member_detail",
+            member_id=target_member.member_id,
+        )
+
+    if request.method == "POST":
+        form = MemberPasswordResetForm(
+            request.POST,
+            user=profile.user,
+        )
+
+        if form.is_valid():
+            profile.user.set_password(
+                form.cleaned_data["new_password1"]
+            )
+            profile.user.save(update_fields=["password"])
+
+            messages.success(
+                request,
+                f"Password reset successfully for {target_member.full_name}."
+            )
+
+            return redirect(
+                "member_detail",
+                member_id=target_member.member_id,
+            )
+    else:
+        form = MemberPasswordResetForm(user=profile.user)
+
+    context = {
+        "page_title": "Reset Member Password",
+        "form": form,
+        "profile_member": target_member,
+        "member": current_member,
+    }
+
+    return render(
+        request,
+        "library_app/reset_member_password.html",
+        context,
+    )
 
 @login_required
 def member_detail(request, member_id):
@@ -2064,3 +2158,66 @@ def delete_book(request, book_id):
         )
         return redirect('books_catalogue')
 
+
+@login_required
+def coming_soon(request, section):
+    sections = {
+        "issue_return": {
+            "title": "Issue & Return",
+            "icon": "📚",
+            "description": (
+                "The book circulation module is planned for a future update. "
+                "It will provide book issuing, returns and loan management."
+            ),
+        },
+        "reservations": {
+            "title": "Reservations",
+            "icon": "📖",
+            "description": (
+                "The reservation module is planned for a future update. "
+                "It will help manage book reservations and availability."
+            ),
+        },
+        "fines_payments": {
+            "title": "Fines & Payments",
+            "icon": "💳",
+            "description": (
+                "The fines and payments module is planned for a future update. "
+                "It will provide fine tracking and payment management."
+            ),
+        },
+        "reports": {
+            "title": "Reports & Analytics",
+            "icon": "📊",
+            "description": (
+                "The reporting module is planned for a future update. "
+                "It will provide useful library statistics and reports."
+            ),
+        },
+        "settings": {
+            "title": "Library Settings",
+            "icon": "⚙️",
+            "description": (
+                "Library configuration options are planned for a future update."
+            ),
+        },
+    }
+
+    section_data = sections.get(section)
+
+    if not section_data:
+        raise Http404("Section not found.")
+
+    context = {
+        "page_title": section_data["title"],
+        "section_title": section_data["title"],
+        "section_icon": section_data["icon"],
+        "section_description": section_data["description"],
+        "member": request.user.profile.member,
+    }
+
+    return render(
+        request,
+        "library_app/coming_soon.html",
+        context,
+    )

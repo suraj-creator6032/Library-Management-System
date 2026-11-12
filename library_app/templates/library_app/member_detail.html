@@ -36,6 +36,18 @@
             </a>
         {% endif %}
     {% endif %}
+    {% if member.member_type == 'LIBRARIAN' %}
+    {% if profile_member.member_type != 'LIBRARIAN' or request.user.is_superuser %}
+        {% if profile_member.member_id != member.member_id %}
+                <a href="{% url 'reset_member_password' profile_member.member_id %}"
+                class="inline-flex items-center justify-center rounded-lg
+                        border border-slate-300 bg-white px-4 py-2
+                        text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                    Reset Password
+                </a>
+            {% endif %}
+        {% endif %}
+    {% endif %}
 
     
 

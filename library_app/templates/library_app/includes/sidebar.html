@@ -18,75 +18,137 @@
     </div>
 
     <!-- Navigation -->
+    
     <nav class="flex-1 space-y-1 overflow-y-auto px-4 py-6">
 
         <p class="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
             Main Menu
         </p>
 
+        <!-- Dashboard -->
         <a href="{% url 'dashboard' %}"
-           class="flex items-center gap-3 rounded-lg bg-indigo-600 px-3 py-3 text-sm font-medium text-white">
-            <span>▦</span>
+        class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium
+        {% if request.resolver_match.url_name == 'dashboard' %}
+            bg-indigo-600 text-white
+        {% else %}
+            text-slate-300 hover:bg-slate-800 hover:text-white
+        {% endif %}">
+            <span>📊</span>
             Dashboard
         </a>
 
+        <!-- Books Catalogue -->
         <a href="{% url 'books_catalogue' %}"
-           class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-slate-300 hover:bg-white/10 hover:text-white">
-            <span>▤</span>
+        class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium
+        {% if request.resolver_match.url_name == 'books_catalogue' or request.resolver_match.url_name == 'book_detail' or request.resolver_match.url_name == 'add_book' or request.resolver_match.url_name == 'edit_book' or request.resolver_match.url_name == 'add_book_copies' %}
+            bg-indigo-600 text-white
+        {% else %}
+            text-slate-300 hover:bg-slate-800 hover:text-white
+        {% endif %}">
+            <span>📚</span>
             Books Catalogue
         </a>
 
+        <!-- Reference Data -->
         <a href="{% url 'reference_data' %}"
-           class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-slate-300 hover:bg-white/10 hover:text-white">
-           <span>📑</span> 
-           Reference Data
+        class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium
+        {% if request.resolver_match.url_name == 'reference_data' or request.resolver_match.url_name == 'add_reference' or request.resolver_match.url_name == 'edit_reference' %}
+            bg-indigo-600 text-white
+        {% else %}
+            text-slate-300 hover:bg-slate-800 hover:text-white
+        {% endif %}">
+            <span>📑</span>
+            Reference Data
         </a>
+
+        <!-- Members -->
         {% if member.member_type == 'LIBRARIAN' %}
-            <a href="{% url 'members_directory' %}"
-            class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-slate-300 hover:bg-white/10 hover:text-white">
-                <span>♙</span>
-                Members
-            </a>
+        <a href="{% url 'members_directory' %}"
+        class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium
+        {% if request.resolver_match.url_name == 'members_directory' or request.resolver_match.url_name == 'member_detail' or request.resolver_match.url_name == 'add_member' or request.resolver_match.url_name == 'edit_member' or request.resolver_match.url_name == 'reset_member_password' %}
+            bg-indigo-600 text-white
+        {% else %}
+            text-slate-300 hover:bg-slate-800 hover:text-white
+        {% endif %}">
+            <span>👥</span>
+            Members
+        </a>
         {% endif %}
+
+
+        <!-- Circulation -->
         <p class="mb-3 mt-8 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
             Circulation
         </p>
 
-        <a href="#"
-           class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-slate-300 hover:bg-white/10 hover:text-white">
+        <!-- Issue & Return -->
+        <a href="{% url 'coming_soon' 'issue_return' %}"
+        class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium
+        {% if request.resolver_match.url_name == 'coming_soon' and request.resolver_match.kwargs.section == 'issue_return' %}
+            bg-indigo-600 text-white
+        {% else %}
+            text-slate-300 hover:bg-slate-800 hover:text-white
+        {% endif %}">
             <span>⇄</span>
             Issue & Return
         </a>
 
-        <a href="#"
-           class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-slate-300 hover:bg-white/10 hover:text-white">
+        <!-- Reservations -->
+        <a href="{% url 'coming_soon' 'reservations' %}"
+        class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium
+        {% if request.resolver_match.url_name == 'coming_soon' and request.resolver_match.kwargs.section == 'reservations' %}
+            bg-indigo-600 text-white
+        {% else %}
+            text-slate-300 hover:bg-slate-800 hover:text-white
+        {% endif %}">
             <span>▣</span>
             Reservations
         </a>
 
-        <a href="#"
-           class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-slate-300 hover:bg-white/10 hover:text-white">
+        <!-- Fines & Payments -->
+        <a href="{% url 'coming_soon' 'fines_payments' %}"
+        class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium
+        {% if request.resolver_match.url_name == 'coming_soon' and request.resolver_match.kwargs.section == 'fines_payments' %}
+            bg-indigo-600 text-white
+        {% else %}
+            text-slate-300 hover:bg-slate-800 hover:text-white
+        {% endif %}">
             <span>₹</span>
             Fines & Payments
         </a>
 
+
+        <!-- Management -->
         <p class="mb-3 mt-8 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
             Management
         </p>
 
-        <a href="#"
-           class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-slate-300 hover:bg-white/10 hover:text-white">
+        <!-- Reports -->
+        <a href="{% url 'coming_soon' 'reports' %}"
+        class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium
+        {% if request.resolver_match.url_name == 'coming_soon' and request.resolver_match.kwargs.section == 'reports' %}
+            bg-indigo-600 text-white
+        {% else %}
+            text-slate-300 hover:bg-slate-800 hover:text-white
+        {% endif %}">
             <span>▥</span>
             Reports
         </a>
 
-        <a href="#"
-           class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-slate-300 hover:bg-white/10 hover:text-white">
+        <!-- Settings -->
+        <a href="{% url 'coming_soon' 'settings' %}"
+        class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium
+        {% if request.resolver_match.url_name == 'coming_soon' and request.resolver_match.kwargs.section == 'settings' %}
+            bg-indigo-600 text-white
+        {% else %}
+            text-slate-300 hover:bg-slate-800 hover:text-white
+        {% endif %}">
             <span>⚙</span>
             Settings
         </a>
 
     </nav>
+
 
     <!-- Footer -->
     <div class="border-t border-white/10 p-4">

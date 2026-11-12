@@ -1134,3 +1134,47 @@ class MemberUpdateForm(forms.ModelForm):
     def clean_phone(self):
         phone = self.cleaned_data.get("phone", "")
         return phone.strip() or None
+
+
+class MemberPasswordResetForm(forms.Form):
+    new_password1 = forms.CharField(
+        label="New Password",
+        widget=forms.PasswordInput(attrs={
+            "placeholder": "Enter the new password",
+            "autocomplete": "new-password",
+        }),
+    )
+
+    new_password2 = forms.CharField(
+        label="Confirm New Password",
+        widget=forms.PasswordInput(attrs={
+            "placeholder": "Confirm the new password",
+            "autocomplete": "new-password",
+        }),
+    )
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+        apply_form_styles(self.fields)
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        password1 = cleaned_data.get("new_password1")
+        password2 = cleaned_data.get("new_password2")
+
+        if password1 and password2:
+            if password1 != password2:
+                self.add_error(
+                    "new_password2",
+                    "The passwords do not match."
+                )
+                return cleaned_data
+
+            try:
+                validate_password(password1, user=self.user)
+            except forms.ValidationError as error:
+                self.add_error("new_password1", error)
+
+        return cleaned_data

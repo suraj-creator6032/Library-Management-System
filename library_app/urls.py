@@ -22,4 +22,6 @@ urlpatterns = [
     path('members/<int:member_id>/',views.member_detail, name='member_detail'),
     path('members/add/',views.add_member, name='add_member'),
     path('members/<int:member_id>/edit/', views.edit_member, name='edit_member'),
+    path('members/<int:member_id>/reset-password/', views.reset_member_password, name='reset_member_password'),
+    path('coming-soon/<str:section>/',views.coming_soon, name='coming_soon'),
 ]
