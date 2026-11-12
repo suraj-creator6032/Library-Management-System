@@ -1,4 +1,4 @@
-
+ 
 {% extends 'library_app/base.html' %}
 
 {% block title %}Add Book | Library Management System{% endblock %}
@@ -20,8 +20,7 @@
     </p>
 </section>
 
-<form method="POST"
-      class="max-w-4xl space-y-6">
+<form method="POST" class="max-w-4xl space-y-6" id="add-book-form">
 
     {% csrf_token %}
 
@@ -68,32 +67,46 @@
     <!-- Author selection -->
     <section class="rounded-xl border border-border bg-white p-6 shadow-sm">
 
-        <h2 class="mb-2 text-lg font-semibold text-slate-900">
-            Authors
-        </h2>
+        <div class="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
 
-        <p class="mb-5 text-sm text-slate-500">
-            Select all authors associated with this book.
-        </p>
+            <div>
+                <h2 class="text-lg font-semibold text-slate-900">
+                    Authors
+                </h2>
 
-        {% if form.authors.field.queryset.exists %}
-
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {% for checkbox in form.authors %}
-                    <label class="flex items-center gap-3 rounded-lg border border-slate-200 p-3 text-sm text-slate-700 transition hover:bg-slate-50">
-                        {{ checkbox.tag }}
-                        {{ checkbox.choice_label }}
-                    </label>
-                {% endfor %}
+                <p class="mt-1 text-sm text-slate-500">
+                    Select all authors associated with this book.
+                </p>
             </div>
 
-        {% else %}
-
             <p class="text-sm text-amber-700">
-                No authors have been added yet. Add authors through Django Admin before creating this book.
+                No authors have been added yet.
+                Please add authors through Reference Data before creating this book.
             </p>
 
-        {% endif %}
+        </div>
+
+        <div id="author-options" class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+
+            {% for checkbox in form.authors %}
+
+                <label class="flex items-center gap-3 rounded-lg border border-slate-200 p-3 text-sm text-slate-700 transition hover:bg-slate-50">
+
+                    {{ checkbox.tag }}
+                    {{ checkbox.choice_label }}
+
+                </label>
+
+            {% empty %}
+
+                <p id="no-authors-message"
+                   class="text-sm text-amber-700 sm:col-span-2">
+                    No authors have been added yet. Use the Add New Author button to create one.
+                </p>
+
+            {% endfor %}
+
+        </div>
 
         {% for error in form.authors.errors %}
             <p class="mt-2 text-xs text-rose-600">{{ error }}</p>
@@ -164,5 +177,6 @@
     </div>
 
 </form>
+
 
 {% endblock %}

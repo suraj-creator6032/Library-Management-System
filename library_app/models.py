@@ -18,6 +18,9 @@ class Authors(models.Model):
         managed = False
         db_table = 'authors'
 
+    def __str__(self):
+        return self.author_name
+
 
 class BookAuthors(models.Model):
     pk = models.CompositePrimaryKey('book_id', 'author_id')
@@ -66,6 +69,9 @@ class Categories(models.Model):
         managed = False
         db_table = 'categories'
 
+    def __str__(self):
+        return self.category_name
+
 
 class Departments(models.Model):
     department_id = models.AutoField(primary_key=True)
@@ -100,19 +106,7 @@ class LibrarySettings(models.Model):
         db_table = 'library_settings'
 
 
-class Loans(models.Model):
-    loan_id = models.AutoField(primary_key=True)
-    copy = models.ForeignKey(BookCopies, models.DO_NOTHING)
-    member = models.ForeignKey('Members', models.DO_NOTHING)
-    issued_by = models.ForeignKey('Members', models.DO_NOTHING, db_column='issued_by', related_name='loans_issued_by_set')
-    issue_date = models.DateField()
-    due_date = models.DateField()
-    return_date = models.DateField(blank=True, null=True)
-    loan_status = models.CharField(max_length=20, blank=True, null=True)
 
-    class Meta:
-        managed = False
-        db_table = 'loans'
 
 
 class Members(models.Model):
@@ -130,6 +124,26 @@ class Members(models.Model):
         managed = False
         db_table = 'members'
 
+    def __str__(self):
+        return self.full_name
+
+class Loans(models.Model):
+    loan_id = models.AutoField(primary_key=True)
+    copy = models.ForeignKey(BookCopies, models.DO_NOTHING)
+    member = models.ForeignKey(Members, models.DO_NOTHING)
+    issued_by = models.ForeignKey('Members', models.DO_NOTHING, db_column='issued_by', related_name='loans_issued_by_set')
+    issue_date = models.DateField()
+    due_date = models.DateField()
+    return_date = models.DateField(blank=True, null=True)
+    loan_status = models.CharField(max_length=20, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'loans'
+
+    def __str__(self):
+        result = f"Member - {self.member.full_name}  Issued by - {self.issued_by}"
+        return result
 
 class Payments(models.Model):
     payment_id = models.AutoField(primary_key=True)
@@ -142,6 +156,10 @@ class Payments(models.Model):
         managed = False
         db_table = 'payments'
 
+    def __str__(self):
+        result =  f"{self.payment_id} - {self.amount}"
+        return result
+
 
 class Publishers(models.Model):
     publisher_id = models.AutoField(primary_key=True)
@@ -151,6 +169,9 @@ class Publishers(models.Model):
     class Meta:
         managed = False
         db_table = 'publishers'
+
+    def __str__(self):
+        return self.publisher_name
 
 
 class Reservations(models.Model):
@@ -164,6 +185,10 @@ class Reservations(models.Model):
     class Meta:
         managed = False
         db_table = 'reservations'
+
+    def __str__(self):
+        result = f"{self.reservation_id} - {self.reservation_status} for {self.book.title}"
+        return result
 
 class UserProfile(models.Model):
     user = models.OneToOneField(
